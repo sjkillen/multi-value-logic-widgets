@@ -1,8 +1,3 @@
-
-#const size = 6.
-
-instruction(1..size).
-
 lvalue(t;u;cf;b;st;f).
 lvar(t), lvar(u), lvar(cf), lvar(b), lvar(st), lvar(f).
 rvar(t), rvar(u), rvar(cf), rvar(b), rvar(st), rvar(f).
@@ -74,7 +69,7 @@ operation(le).
 operation(meet).
 operation(join).
 
-component((Op, ID)) :- operation(Op), ID = 0..5.
+component((Op, ID)) :- operation(Op), ID = 0.
 
 { arc_left(Src, (Op, ID)) : component(Src) } = 1 :- component((Op, ID)).
 { arc_right(Src, (Op, ID)) : component(Src) } = 1 :- component((Op, ID)).
@@ -146,20 +141,23 @@ component_value((Op, ID), Value) :-
 
 
 { output_component((Op, ID)) : component((Op, ID)) } = 1.
-output((Op, ID), Value) :- component_value((Op, ID), Value).
+output(Op, Value) :- output_component((Op, ID)), component_value((Op, ID), Value).
 
 % arc_left(lvar, (join, 0)).
 % arc_right(rvar, (join, 0)).
 
 
 :- not sat.
-sat :- lvar(LV), rvar(RV), output(_, Value), impl(LV, RV, Value).
+sat :- lvar(LV), rvar(RV), output(Op, Value), impl(LV, RV, Value).
 lvar(L) :- sat, lvalue(L).
 rvar(L) :- sat, lvalue(L).
 
 #show output/2.
+% #show lvar/1.
+% #show rvar/1.
 % #show arc_left/2.
 % #show arc_right/2.
+% #show component_value/2.
 
 
 % Debug
